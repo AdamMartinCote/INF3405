@@ -35,4 +35,15 @@ public class Utils {
 
 		return serverPort;
 	}
+	
+	public static String getUsername() {
+        System.out.print("Enter username: ");
+        return scanner.nextLine();
+	}
+	
+	public static String getPassword() {
+        System.out.print("Enter password: ");
+        return scanner.nextLine();
+	}
+	
 }
