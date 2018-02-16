@@ -54,30 +54,38 @@ public class Client {
 		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 		PrintWriter out = new PrintWriter(client.socket.getOutputStream(), true);
 
-		String username = Utils.getUsername();
-		String pwd = Utils.getPassword();
+		String response;
+		do {
+			String username = Utils.getUsername();
+			String pwd = Utils.getPassword();
+			
+			out.println(username);
+			out.println(pwd);
 		
+			response = Utils.readNextLineFromSocket(in);
+			if(Integer.parseInt(response) != Message.LOGIN_SUCCESS) {
+				System.out.println("erreur dans la saisie du mot de passe");
+			}
+		} while (Integer.parseInt(response) != Message.LOGIN_SUCCESS);
 		
-		
-//		while (true){
-//			username = in.readLine();
-//			String password = in.readLine();
-//			if (this.credentialsMatch(username, password)) {
-//				out.println(Message.LOGIN_SUCCESS);
-//				break;
-//			} else {
-//				out.println(Message.LOGIN_FAIL);
-//			}
-//		}
+		System.out.println("Sending file");
+        File imageToSend = new File(FILE_PATH);
+
         
+        System.out.println("image length: " + (int)imageToSend.length());
+        byte [] mybytearray  = new byte [(int)imageToSend.length()];
+        fis = new FileInputStream(imageToSend);
+        bis = new BufferedInputStream(fis);
+        bis.read(mybytearray,0,mybytearray.length);
         
-//        File imageToSend = new File(FILE_PATH);
-//
-//        byte [] mybytearray  = new byte [(int)imageToSend.length()];
-//        fis = new FileInputStream(imageToSend);
-//        bis = new BufferedInputStream(fis);
-//        bis.read(mybytearray,0,mybytearray.length);
-//        
-//        bis.close();
+        String text1 = new String(mybytearray, "UTF-8");
+        char[] chars = text1.toCharArray();
+        
+        out.write(chars,0,chars.length);
+
+		
+
+        // Tear down
+        bis.close();
     }
 }
