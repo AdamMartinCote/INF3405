@@ -4,4 +4,9 @@
 !*.md
 !*.jpg
 
+# files to exclude
 .metadata/*
+/.metadata/
+*.class
+*\#
+*~
