@@ -1,5 +1,7 @@
 package utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -46,4 +48,9 @@ public class Utils {
         return scanner.nextLine();
 	}
 	
+	
+	public static String readNextLineFromSocket(BufferedReader in) throws IOException {
+		while (!in.ready()) {}
+		return in.readLine();
+	}
 }
