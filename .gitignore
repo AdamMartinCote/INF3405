@@ -1,3 +1,7 @@
-*.class
-.metadata
-bin/*
+# Files to include
+!.gitignore
+!*.java
+!*.md
+!*.jpg
+
+.metadata/*
