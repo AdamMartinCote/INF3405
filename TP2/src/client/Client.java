@@ -57,6 +57,8 @@ public class Client {
 		String username = Utils.getUsername();
 		String pwd = Utils.getPassword();
 		
+		
+		
 //		while (true){
 //			username = in.readLine();
 //			String password = in.readLine();
