@@ -26,14 +26,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
 public class Server {
 
-	private static int MinimumPortNumber = 5000;
-	private static int MaximumPortNumber = 5050;
 	private static Scanner reader = new Scanner(System.in);
 	private static int nClients = 0;
 	
@@ -45,7 +42,7 @@ public class Server {
 		ServerSocket listener;
 		InetAddress locIP = InetAddress.getByName(serverIp);
 		listener = new ServerSocket();
-		listener.setReuseAddress(true);
+		// listener.setReuseAddress(true);
 		try {
 			listener.bind(new InetSocketAddress(locIP, port));
 		} catch (Exception e) {
@@ -91,8 +88,8 @@ public class Server {
 				PrintWriter out = new PrintWriter(this.socket.getOutputStream(), true);
 				String username = null;
 				while (true){
-					username = in.readLine();
-					String password = in.readLine();
+					username = Utils.readNextLineFromSocket(in);
+					String password = Utils.readNextLineFromSocket(in);
 					if (this.credentialsMatch(username, password)) {
 						out.println(Message.LOGIN_SUCCESS);
 						break;
@@ -103,14 +100,19 @@ public class Server {
 				
 				// Transform pictures
 				while (true) {
-					String fileName = in.readLine();
+					String fileName = Utils.readNextLineFromSocket(in);
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd@HH:mm:ss");
 					Date date = new Date();
+					
+					in.close();
+					
 					System.out.println("[" + username + " - " + this.socket.getInetAddress().toString() + ":" + this.socket.getPort() 
 						+ " - " + dateFormat.format(date) + "] : " +  fileName);
 					/*
 					BufferedImage image = ImageIO.read(inputStream);
-					BufferedImage bufferedImage = Sobel.process(image);*/
+					BufferedImage bufferedImage = Sobel.process(image);
+					Send bufferedImage
+					*/
 				}
 				
 			} catch (IOException e) {
@@ -123,7 +125,6 @@ public class Server {
 				}
 			}
 		}
-		
 		
 		@SuppressWarnings("finally")
 		private boolean credentialsMatch(String username, String password) {
