@@ -71,9 +71,20 @@ public class Client {
 		String filename = Utils.getStringFromUser();
 		
 		System.out.println("Sending file");
-        File imageToSend = new File(ROOT_PATH + filename);
-        
+		
+		File imageToSend = null;
+		while (imageToSend == null) { // TODO still crash on wrong filename
+			try {
+				imageToSend = new File(ROOT_PATH + filename);
+			} catch(Exception e) {
+				imageToSend = null;
+				System.out.println("wrong filename");
+			}
+		}
+	
+		
         System.out.println("image length: " + (int)imageToSend.length());
+        
         byte [] mybytearray  = new byte [(int)imageToSend.length()];
         fis = new FileInputStream(imageToSend);
         bis = new BufferedInputStream(fis);

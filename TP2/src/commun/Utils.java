@@ -34,7 +34,7 @@ public class Utils {
 			System.out.println("Enter server Port number (5000-5050): ");
 			String tmp = scanner.nextLine();
 			if (tmp.length() == 0) {
-				tmp = DEFAULT_IP;
+				tmp = DEFAULT_PORT;
 			}
 			try {
 				serverPort = Integer.parseInt(tmp);
