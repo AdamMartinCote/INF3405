@@ -7,12 +7,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import utils.Utils;
 
 public class Client {
 
@@ -21,13 +23,14 @@ public class Client {
     private JFrame frame = new JFrame("Capitalize Client");
     private JTextField dataField = new JTextField(40);
     private JTextArea messageArea = new JTextArea(8, 60);
+    
 
     /**
      * Constructs the client by laying out the GUI and registering a
      * listener with the textfield so that pressing Enter in the
      * listener sends the textfield contents to the server.
      */
-    public Client() {
+    Client() {
 
         // Layout GUI
         messageArea.setEditable(false);
@@ -94,10 +97,17 @@ public class Client {
      * Runs the client application.
      */
     public static void main(String[] args) throws Exception {
+    	
+    	System.out.println("Please enter ip address: ");
+    	
         Client client = new Client();
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         client.frame.pack();
         client.frame.setVisible(true);
-        client.connectToServer();
+        try {
+        	client.connectToServer();
+        } catch(Exception e) {
+        	System.out.println("Error while connecting -- " + e.getMessage());
+        }
     }
 }

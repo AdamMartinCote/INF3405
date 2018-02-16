@@ -1,5 +1,5 @@
 /**
- * @author Adam Martin-Côté et Laurent Pepin
+ * @author Adam Martin-Cï¿½tï¿½ et Laurent Pepin
  */
 package server;
 
@@ -7,7 +7,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.Scanner;
-import java.util.regex.Pattern;
+
+
+import utils.Utils;
 
 public class Server {
 
@@ -15,8 +17,8 @@ public class Server {
 
 	public static void main(String[] args) throws Exception {
 
-		String serverIp = getValidIpFromUser();
-		int port = getValidPortFromUser(); // CRASH
+		String serverIp = Utils.getValidIpFromUser();
+		int port = Utils.getValidPortFromUser();
 
 		ServerSocket listener;
 		InetAddress locIP = InetAddress.getByName(serverIp);
@@ -41,34 +43,5 @@ public class Server {
 			reader.close();
 		}
 	}
-
-	private static String getValidIpFromUser() {
-		final Pattern IP_PATTERN = Pattern
-				.compile("^(([012]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
-
-		String serverIp = null;
-		do {
-			System.out.println("Enter server IP address: ");
-			serverIp = reader.nextLine();
-		} while (!IP_PATTERN.matcher(serverIp).matches());
-
-		return serverIp;
-	}
-
-	private static int getValidPortFromUser() {
-		int serverPort = 0;
-		do {
-			System.out.println("Enter server Port number NOW: ");
-			String tmp = reader.nextLine();
-			try {
-				serverPort = Integer.parseInt(tmp);
-			} catch (NumberFormatException e) {
-				System.out.println("ERROR: invalid port number format -- " + e.getMessage());
-			} catch (Exception e) {
-				System.out.println("ERROR: unknown error -- " + e.getMessage());
-			}
-		} while (serverPort < 5000 || serverPort > 5050);
-
-		return serverPort;
-	}
 }
+
