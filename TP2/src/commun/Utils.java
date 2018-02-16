@@ -6,6 +6,10 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Utils {
+	
+	private static String DEFAULT_IP = "10.200.14.216";
+	private static String DEFAULT_PORT = "5005";
+	
     private static Scanner scanner = new Scanner(System.in);
     
 	public static String getValidIpFromUser() {
@@ -16,6 +20,9 @@ public class Utils {
 		do {
 			System.out.println("Enter server IP address: ");
 			serverIp = scanner.nextLine();
+			if (serverIp.length() == 0) {
+				serverIp = DEFAULT_IP;
+			}
 		} while (!IP_PATTERN.matcher(serverIp).matches());
 
 		return serverIp;
@@ -26,6 +33,9 @@ public class Utils {
 		do {
 			System.out.println("Enter server Port number (5000-5050): ");
 			String tmp = scanner.nextLine();
+			if (tmp.length() == 0) {
+				tmp = DEFAULT_IP;
+			}
 			try {
 				serverPort = Integer.parseInt(tmp);
 			} catch (NumberFormatException e) {
@@ -46,6 +56,10 @@ public class Utils {
 	public static String getPassword() {
         System.out.print("Enter password: ");
         return scanner.nextLine();
+	}
+	
+	public static String getStringFromUser() {
+		return scanner.nextLine();
 	}
 	
 	

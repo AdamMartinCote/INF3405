@@ -14,7 +14,7 @@ import commun.Message;
 import commun.Utils;
 
 public class Client {
-	private final static String FILE_PATH = "src/resources/lassonde.jpg";
+	private final static String ROOT_PATH = "src/resources/";
 
     private BufferedReader in;
     private PrintWriter out;
@@ -25,7 +25,6 @@ public class Client {
 
     }
 
-    @SuppressWarnings("resource")
 	public void connectToServer() throws IOException {
 
         // Get the server address from a dialog box.
@@ -68,9 +67,11 @@ public class Client {
 			}
 		} while (Integer.parseInt(response) != Message.LOGIN_SUCCESS);
 		
+		System.out.println("Please name a file to send (will search \"resources\")");
+		String filename = Utils.getStringFromUser();
+		
 		System.out.println("Sending file");
-        File imageToSend = new File(FILE_PATH);
-
+        File imageToSend = new File(ROOT_PATH + filename);
         
         System.out.println("image length: " + (int)imageToSend.length());
         byte [] mybytearray  = new byte [(int)imageToSend.length()];
