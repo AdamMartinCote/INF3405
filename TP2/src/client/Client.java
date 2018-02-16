@@ -11,7 +11,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import commun.Message;
-import utils.Utils;
+import commun.Utils;
 
 public class Client {
 	private final static String FILE_PATH = "src/resources/lassonde.jpg";
