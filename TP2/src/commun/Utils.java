@@ -65,6 +65,8 @@ public class Utils {
 	
 	public static String readNextLineFromSocket(BufferedReader in) throws IOException {
 		while (!in.ready()) {}
+		//return in.readLine();
+		//System.out.println("ReadLine");
 		return in.readLine();
 	}
 }

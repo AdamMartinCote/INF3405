@@ -8,14 +8,20 @@ import commun.Utils;
 import server.Sobel;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.InetAddress;
@@ -35,14 +41,15 @@ public class Server {
 	private static int nClients = 0;
 	
 	public static void main(String[] args) throws Exception {
-
-		String serverIp = Utils.getValidIpFromUser();
-		int port = Utils.getValidPortFromUser();
-
+		
+//		String serverIp = Utils.getValidIpFromUser();
+//		int port = Utils.getValidPortFromUser();
+		String serverIp = "10.200.12.249";
+		int port = 5005;
 		ServerSocket listener;
 		InetAddress locIP = InetAddress.getByName(serverIp);
 		listener = new ServerSocket();
-		// listener.setReuseAddress(true);
+		listener.setReuseAddress(true);
 		try {
 			listener.bind(new InetSocketAddress(locIP, port));
 		} catch (Exception e) {
@@ -86,6 +93,7 @@ public class Server {
 				InputStream inputStream = this.socket.getInputStream();
 				BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 				PrintWriter out = new PrintWriter(this.socket.getOutputStream(), true);
+				DataInputStream dis = new DataInputStream(this.socket.getInputStream());
 				String username = null;
 				while (true){
 					username = Utils.readNextLineFromSocket(in);
@@ -103,18 +111,31 @@ public class Server {
 					String fileName = Utils.readNextLineFromSocket(in);
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd@HH:mm:ss");
 					Date date = new Date();
-					
-					in.close();
-					
 					System.out.println("[" + username + " - " + this.socket.getInetAddress().toString() + ":" + this.socket.getPort() 
 						+ " - " + dateFormat.format(date) + "] : " +  fileName);
-					/*
-					BufferedImage image = ImageIO.read(inputStream);
-					BufferedImage bufferedImage = Sobel.process(image);
-					Send bufferedImage
-					*/
+					
+					// Get file size
+					System.out.println("before");
+					int fileSize = Integer.parseInt(Utils.readNextLineFromSocket(in));
+					System.out.println("Client: " + this.clientNumber + " File size = " + fileSize);
+					
+					
+					//dis = new DataInputStream(this.socket.getInputStream());
+					byte[] data = new byte[fileSize];
+				    dis.readFully(data);
+				    // Never going here
+				    System.out.println("here");
+				    ByteArrayInputStream ian = new ByteArrayInputStream(data);
+				    BufferedImage bImage = ImageIO.read(ian);
+				    System.out.println("here");
+				    
+				    // Save locally for test purpose
+				    File image = new File("test.jpg");
+				    ImageIO.write(bImage, "jpg", image);
+				    dis.close();
+				    System.out.println("end");
+					break;
 				}
-				
 			} catch (IOException e) {
 				System.out.println("Error with client #" + this.clientNumber + " : " + e);
 			} finally {
