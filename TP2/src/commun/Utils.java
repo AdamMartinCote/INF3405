@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 public class Utils {
 	
+	public static final int DATA_BUFFER_SIZE = 1024;
 	private static String DEFAULT_IP = "10.200.14.216";
 	private static String DEFAULT_PORT = "5005";
 	
@@ -65,8 +66,6 @@ public class Utils {
 	
 	public static String readNextLineFromSocket(BufferedReader in) throws IOException {
 		while (!in.ready()) {}
-		//return in.readLine();
-		//System.out.println("ReadLine");
 		return in.readLine();
 	}
 }

@@ -8,20 +8,17 @@ import commun.Utils;
 import server.Sobel;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.InetAddress;
@@ -42,10 +39,8 @@ public class Server {
 	
 	public static void main(String[] args) throws Exception {
 		
-//		String serverIp = Utils.getValidIpFromUser();
-//		int port = Utils.getValidPortFromUser();
-		String serverIp = "10.200.12.249";
-		int port = 5005;
+		String serverIp = Utils.getValidIpFromUser();
+		int port = Utils.getValidPortFromUser();
 		ServerSocket listener;
 		InetAddress locIP = InetAddress.getByName(serverIp);
 		listener = new ServerSocket();
@@ -90,10 +85,12 @@ public class Server {
 		public void run() {
 			try {
 				// Client is connected
-				InputStream inputStream = this.socket.getInputStream();
-				BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+				BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 				PrintWriter out = new PrintWriter(this.socket.getOutputStream(), true);
 				DataInputStream dis = new DataInputStream(this.socket.getInputStream());
+				DataOutputStream dos = new DataOutputStream(this.socket.getOutputStream());
+				
+				// Perform login
 				String username = null;
 				while (true){
 					username = Utils.readNextLineFromSocket(in);
@@ -108,33 +105,38 @@ public class Server {
 				
 				// Transform pictures
 				while (true) {
+					// Read file name
 					String fileName = Utils.readNextLineFromSocket(in);
 					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd@HH:mm:ss");
 					Date date = new Date();
 					System.out.println("[" + username + " - " + this.socket.getInetAddress().toString() + ":" + this.socket.getPort() 
 						+ " - " + dateFormat.format(date) + "] : " +  fileName);
 					
-					// Get file size
-					System.out.println("before");
-					int fileSize = Integer.parseInt(Utils.readNextLineFromSocket(in));
-					System.out.println("Client: " + this.clientNumber + " File size = " + fileSize);
+					// Read data
+					ByteArrayOutputStream dataContainer = new ByteArrayOutputStream();
+					byte[] dataChunk = new byte[Utils.DATA_BUFFER_SIZE];
+					int nBytesReceived = 0;
+					do {
+						nBytesReceived = dis.read(dataChunk);
+						if (nBytesReceived < 0) {
+							throw new IOException();
+						}
+						dataContainer.write(dataChunk, 0, nBytesReceived);
+					} while (nBytesReceived == Utils.DATA_BUFFER_SIZE);
 					
-					
-					//dis = new DataInputStream(this.socket.getInputStream());
-					byte[] data = new byte[fileSize];
-				    dis.readFully(data);
-				    // Never going here
-				    System.out.println("here");
-				    ByteArrayInputStream ian = new ByteArrayInputStream(data);
-				    BufferedImage bImage = ImageIO.read(ian);
-				    System.out.println("here");
-				    
-				    // Save locally for test purpose
-				    File image = new File("test.jpg");
-				    ImageIO.write(bImage, "jpg", image);
-				    dis.close();
-				    System.out.println("end");
-					break;
+				    // Transform image in sobel image
+					byte[] allData = dataContainer.toByteArray();
+					ByteArrayInputStream byis = new ByteArrayInputStream(allData);
+				    BufferedImage originalImage = ImageIO.read(byis);
+				    BufferedImage sobelImage = Sobel.process(originalImage);
+				   
+				    // Send sobel image to client
+				    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    		ImageIO.write(sobelImage, "jpg", baos);
+		    		baos.flush();
+		            byte[] imageBytes = baos.toByteArray();
+			        baos.close();
+			        dos.write(imageBytes, 0, imageBytes.length);
 				}
 			} catch (IOException e) {
 				System.out.println("Error with client #" + this.clientNumber + " : " + e);
